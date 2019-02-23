@@ -25,27 +25,35 @@ let sessionMinutes = 25
 let sessionSeconds = 0
 let sessionTime = sessionMinutes + ":" + (sessionSeconds > 9 ? sessionSeconds : "0" + sessionSeconds)
 
-elTimeRemaining.textContent = sessionTime
-
 // Set initial break time
 let breakMinutes = 5
 let breakSeconds = 0
 let breakTime = breakMinutes + ":" + (breakSeconds > 9 ? breakSeconds : "0" + breakSeconds)
 
+// Declare and initialize time remaining variables
+let minutesRemaining = sessionMinutes
+let secondsRemaining = sessionSeconds
+
+elTimeRemaining.textContent = sessionTime
+elSessionTimeInMinutes.textContent = sessionMinutes
+elBreakTimeInMinutes.textContent = breakMinutes
+
 // timer(sessionMinutes, sessionSeconds)
 
-function timer(minutes, seconds) {
-    // Get total number of seconds
-    seconds += minutes * 60
-    while (seconds > 0) {
-        setTimeout(computeTimeRemaining(seconds), 1000)
-        seconds--
-    }
+function countdown(minutes, seconds) {
+    // Get total number of seconds\
+    if (minutes > 0) {seconds = +seconds + +(minutes * 60)}
+    timer = setInterval(function() {
+        computeTimeRemaining(--seconds)
+    }, 1000)
 }
 
 function computeTimeRemaining(seconds) {
+    if (seconds < 0) {
+        clearInterval(timer)
+        return alert("you've finished a pomo!")
+    }
     elTimeRemaining.textContent = formatTime(seconds)
-    // return seconds = seconds - 1
 }
 
 function formatTime(seconds) {
@@ -55,13 +63,18 @@ function formatTime(seconds) {
 }
 
 function startTimer() {
-    timer(sessionMinutes, sessionSeconds)
-    // alert("play feature not implemented yet")
+    countdown(minutesRemaining, secondsRemaining)
 }
 
 function pauseTimer() {
-    // TODO
-    alert("pause feature not implemented yet")
+    if(timer) {clearInterval(timer)}
+    [minutesRemaining, secondsRemaining] = parseTime(elTimeRemaining.textContent)
+}
+
+function parseTime(timeString) {
+    let timeArray = timeString.split(":")
+    // timeArray[1] = (timeArray[1] > 9 ? timeArray[1] : "0" + timeArray[1])
+    return timeArray
 }
 
 function stopTimer() {
@@ -71,8 +84,9 @@ function stopTimer() {
 
 function resetTimer() {
     // Conditional statement to run only when timer not active
-    sessionTime = sessionMinutes + ":" + (sessionSeconds > 9 ? sessionSeconds : "0" + sessionSeconds)
-    elTimeRemaining.textContent = sessionTime
+    minutesRemaining = sessionMinutes
+    secondsRemaining = sessionSeconds
+    elTimeRemaining.textContent = sessionMinutes + ":" + (sessionSeconds > 9 ? sessionSeconds : "0" + sessionSeconds)
 }
 
 function increaseSessionTime() {
